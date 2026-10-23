@@ -1,0 +1,189 @@
+[
+  {
+    "name": "weighted quantity rounds half up to the nearest cent",
+    "items": [
+      { "quantity": "1.55", "unitPriceCents": 269, "discountCents": 109, "taxCents": 0 }
+    ],
+    "receipt": { "subtotalCents": 417, "taxCents": 0, "discountCents": 109 },
+    "expected": {
+      "subtotalCents": 417,
+      "totalCents": 308,
+      "taxAllocatedCents": 0,
+      "taxComplete": true,
+      "discountAllocatedCents": 109,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": []
+    }
+  },
+  {
+    "name": "fractional quantity with complete allocations",
+    "items": [
+      { "quantity": "1.2", "unitPriceCents": 9900, "discountCents": 0, "taxCents": 900 }
+    ],
+    "receipt": { "subtotalCents": 11880, "taxCents": 900, "discountCents": 0 },
+    "expected": {
+      "subtotalCents": 11880,
+      "totalCents": 12780,
+      "taxAllocatedCents": 900,
+      "taxComplete": true,
+      "discountAllocatedCents": 0,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": []
+    }
+  },
+  {
+    "name": "partial tax and discount allocations",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": null, "taxCents": 400 },
+      { "quantity": "1", "unitPriceCents": 500, "discountCents": null, "taxCents": null }
+    ],
+    "receipt": { "subtotalCents": 1500, "taxCents": 800, "discountCents": 500 },
+    "expected": {
+      "subtotalCents": 1500,
+      "totalCents": 1900,
+      "taxAllocatedCents": 400,
+      "taxComplete": false,
+      "discountAllocatedCents": 0,
+      "discountComplete": false,
+      "warnings": [],
+      "errors": []
+    }
+  },
+  {
+    "name": "allocated tax and discount exceed receipt totals",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": 300, "taxCents": 400 }
+    ],
+    "receipt": { "subtotalCents": 1000, "taxCents": 100, "discountCents": 100 },
+    "expected": {
+      "subtotalCents": 1000,
+      "totalCents": 1100,
+      "taxAllocatedCents": 400,
+      "taxComplete": true,
+      "discountAllocatedCents": 300,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": [
+        "Allocated line item tax exceeds the receipt tax",
+        "Allocated line item discount exceeds the receipt discount"
+      ]
+    }
+  },
+  {
+    "name": "differences within two cent tolerance",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": 0, "taxCents": 0 }
+    ],
+    "receipt": { "subtotalCents": 1002, "taxCents": 2, "discountCents": 2 },
+    "expected": {
+      "subtotalCents": 1000,
+      "totalCents": 1000,
+      "taxAllocatedCents": 0,
+      "taxComplete": true,
+      "discountAllocatedCents": 0,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": []
+    }
+  },
+  {
+    "name": "complete allocations must reconcile",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": 50, "taxCents": 100 }
+    ],
+    "receipt": { "subtotalCents": 1000, "taxCents": 200, "discountCents": 100 },
+    "expected": {
+      "subtotalCents": 1000,
+      "totalCents": 1050,
+      "taxAllocatedCents": 100,
+      "taxComplete": true,
+      "discountAllocatedCents": 50,
+      "discountComplete": true,
+      "warnings": [
+        "Line item tax does not reconcile with the receipt tax",
+        "Line item discount does not reconcile with the receipt discount"
+      ],
+      "errors": []
+    }
+  },
+  {
+    "name": "subtotal and tax warnings retain exact contract text",
+    "items": [
+      { "quantity": "1.2", "unitPriceCents": 9900, "discountCents": 0, "taxCents": 900 }
+    ],
+    "receipt": { "subtotalCents": 12780, "taxCents": 0, "discountCents": 0 },
+    "expected": {
+      "subtotalCents": 11880,
+      "totalCents": 12780,
+      "taxAllocatedCents": 900,
+      "taxComplete": true,
+      "discountAllocatedCents": 0,
+      "discountComplete": true,
+      "warnings": [
+        "Line item subtotals do not reconcile with the receipt subtotal"
+      ],
+      "errors": [
+        "Allocated line item tax exceeds the receipt tax"
+      ]
+    }
+  },
+  {
+    "name": "allocated tax and discount may exceed by exactly two cents",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": 102, "taxCents": 102 }
+    ],
+    "receipt": { "subtotalCents": 1000, "taxCents": 100, "discountCents": 100 },
+    "expected": {
+      "subtotalCents": 1000,
+      "totalCents": 1000,
+      "taxAllocatedCents": 102,
+      "taxComplete": true,
+      "discountAllocatedCents": 102,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": []
+    }
+  },
+  {
+    "name": "allocated tax and discount exceeding by three cents are errors",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": 103, "taxCents": 103 }
+    ],
+    "receipt": { "subtotalCents": 1000, "taxCents": 100, "discountCents": 100 },
+    "expected": {
+      "subtotalCents": 1000,
+      "totalCents": 1000,
+      "taxAllocatedCents": 103,
+      "taxComplete": true,
+      "discountAllocatedCents": 103,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": [
+        "Allocated line item tax exceeds the receipt tax",
+        "Allocated line item discount exceeds the receipt discount"
+      ]
+    }
+  },
+  {
+    "name": "allocated amounts require expense level tax and discount",
+    "items": [
+      { "quantity": "1", "unitPriceCents": 1000, "discountCents": 3, "taxCents": 3 }
+    ],
+    "receipt": { "subtotalCents": 1000, "taxCents": null, "discountCents": null },
+    "expected": {
+      "subtotalCents": 1000,
+      "totalCents": 1000,
+      "taxAllocatedCents": 3,
+      "taxComplete": true,
+      "discountAllocatedCents": 3,
+      "discountComplete": true,
+      "warnings": [],
+      "errors": [
+        "Allocated line item tax exceeds the receipt tax",
+        "Allocated line item discount exceeds the receipt discount"
+      ]
+    }
+  }
+]

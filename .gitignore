@@ -1,6 +1,9 @@
 *.jar
 .DS_Store
+__pycache__/
+*.py[cod]
 backend.zip
-.vscode
+.vscode/*
+!.vscode/settings.json
 backend/run/django-cache/
 app-android/

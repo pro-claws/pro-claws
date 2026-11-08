@@ -1,0 +1,218 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Vendistri Route 53 DNS: verified email/validation records and direct dual-stack AWS application aliases.",
+  "Resources": {
+    "Zone": {
+      "Type": "AWS::Route53::HostedZone",
+      "DeletionPolicy": "RetainExceptOnCreate",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "Name": "vendistri.com",
+        "HostedZoneConfig": {
+          "Comment": "Vendistri complete AWS DNS; preserve Google mail; delegate only after authoritative validation."
+        },
+        "HostedZoneTags": [
+          {
+            "Key": "Application",
+            "Value": "vendistri"
+          },
+          {
+            "Key": "Stage",
+            "Value": "migration-preparation"
+          }
+        ]
+      }
+    },
+    "CertificateValidation": {
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneId": {
+          "Ref": "Zone"
+        },
+        "RecordSets": [
+          {
+            "Name": "_61b4e539e5e86f02bf9649045fa74b34.vendistri.com.",
+            "Type": "CNAME",
+            "TTL": "300",
+            "ResourceRecords": [
+              "_3cc055c6ac67dfffb35499b1d510d163.wzccmgtwzk.acm-validations.aws."
+            ]
+          },
+          {
+            "Name": "_b70eecd09efac1ca32290f316428e6e4.secure.vendistri.com.",
+            "Type": "CNAME",
+            "TTL": "300",
+            "ResourceRecords": [
+              "_9ac7162b18973954f27e86d88c4ca980.wzccmgtwzk.acm-validations.aws."
+            ]
+          },
+          {
+            "Name": "_daf360fefc2494d8b92b31d7ac3c7a33.open.vendistri.com.",
+            "Type": "CNAME",
+            "TTL": "300",
+            "ResourceRecords": [
+              "_0c525017491344353ff53fd1a8c9b592.wzccmgtwzk.acm-validations.aws."
+            ]
+          },
+          {
+            "Name": "_dmarc.vendistri.com.",
+            "Type": "TXT",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "\"v=DMARC1; p=none; rua=mailto:postmaster@vendistri.com\""
+            ]
+          },
+          {
+            "Name": "_e4d1b4a987111d206e64322161e3dd6c.www.vendistri.com.",
+            "Type": "CNAME",
+            "TTL": "300",
+            "ResourceRecords": [
+              "_cc39704122bc4f94a288ec79ee991821.wzccmgtwzk.acm-validations.aws."
+            ]
+          },
+          {
+            "Name": "google._domainkey.vendistri.com.",
+            "Type": "TXT",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "\"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5kLXKwNwmSOQcXNRddVpWUEHPvoU/vTOKTB1qJKlWXD/pRisb8fnx6p5FJqDdAGxzlru4eoDgmD5/JHnKgxENrgAPlDEzW8l2gW0Yoq/0ULf7ATt1QtEby5I0UIT7nYQRCk69X8p1UVablqUL7OWVZwlckpD+HpBQsuDvXEeavlYUUKk7FQ/XF6j9sESXGc+Q\" \"VhLWhrKbh91By73XQQ+fbqrbW1sUN1IsiNNvq2AjKwuUBD4er2SzE7T5HluKS2n+mw0WCzs7wDuErxbjMvKZlsAAV1uGh/2lNpc16SZycSwRZnjHLgULkdvvDDxs2btznd2ngO8LBRLvIswQ30l5wIDAQAB\""
+            ]
+          },
+          {
+            "Name": "mail.vendistri.com.",
+            "Type": "A",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "45.79.165.178"
+            ]
+          },
+          {
+            "Name": "mail.vendistri.com.",
+            "Type": "AAAA",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "2600:3c03::f03c:93ff:fe5e:4818"
+            ]
+          },
+          {
+            "Name": "open.vendistri.com.",
+            "Type": "A",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "open.vendistri.com.",
+            "Type": "AAAA",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "secure.vendistri.com.",
+            "Type": "A",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "secure.vendistri.com.",
+            "Type": "AAAA",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "secure.vendistri.com.",
+            "Type": "MX",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "10 SMTP.GOOGLE.COM."
+            ]
+          },
+          {
+            "Name": "vendistri.com.",
+            "Type": "A",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "vendistri.com.",
+            "Type": "AAAA",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "vendistri.com.",
+            "Type": "MX",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "10 SMTP.GOOGLE.COM."
+            ]
+          },
+          {
+            "Name": "vendistri.com.",
+            "Type": "TXT",
+            "TTL": "86400",
+            "ResourceRecords": [
+              "\"v=spf1 include:_spf.google.com ~all\"",
+              "\"google-site-verification=BHQ3hJKF8iRDvbRUSdk6lIuFFxLGJNMpuBepcGLnpxE\""
+            ]
+          },
+          {
+            "Name": "www.vendistri.com.",
+            "Type": "A",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          },
+          {
+            "Name": "www.vendistri.com.",
+            "Type": "AAAA",
+            "AliasTarget": {
+              "DNSName": "dualstack.c28c0af9e31f7ebfa3ce5f877cf9e2a9-3730386.us-east-1.elb.amazonaws.com.",
+              "HostedZoneId": "Z35SXDOTRQ7X7K",
+              "EvaluateTargetHealth": false
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "HostedZoneId": {
+      "Value": {
+        "Ref": "Zone"
+      }
+    },
+    "NameServers": {
+      "Value": {
+        "Fn::Join": [
+          ",",
+          {
+            "Fn::GetAtt": [
+              "Zone",
+              "NameServers"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

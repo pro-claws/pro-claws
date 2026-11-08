@@ -1,0 +1,34 @@
+{
+  "repositories": {
+    "backend": {
+      "revision": "47ae136cb06108c7f52f82e3fa5cc67604bc19fe",
+      "submodules": {}
+    },
+    "vendistri": {
+      "revision": "268ec896194f64e4b1cdef4a57372a6e557d1398",
+      "submodules": {
+        "packages/ui": {
+          "repository": "ui",
+          "revision": "679cfb18874b2b1222c24bb2993c71ca516a93a2"
+        }
+      }
+    },
+    "marketplace": {
+      "revision": "9d82b67a4c812e047522cc30774fe9b7457e4cee",
+      "submodules": {
+        "packages/ui": {
+          "repository": "ui",
+          "revision": "932b9864bb4d8c4b52e786c0c53ddffe1a0d08e6"
+        }
+      }
+    },
+    "home_page": {
+      "revision": "b36ac7f66070ef723ad9d70e0f96c1bc8853f8d1",
+      "submodules": {}
+    }
+  },
+  "production_python": "3.14.4",
+  "portal_asset_manifest_sha256": "90505bb86a15838b534abc9d8d14e9f816b039cffa52b0e383889afd26623b75",
+  "production_backend_baseline": "6138b72752ce83a9be315b2afb9c544d232ec839",
+  "migration_adaptation": "Managed PostgreSQL/Redis runtime monitoring configuration, cherry-picked onto deployed production 6138b72. All 1,333 backend source file hashes match the tested and installed rehearsal candidate; application behavior and dependencies retain the deployed baseline."
+}

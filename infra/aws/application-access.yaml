@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lightsail application identity scoped to the existing configuration key and ingest queue; no administrative permissions.
+Parameters:
+  ExistingConfigurationKeyArn:
+    Type: String
+    AllowedPattern: 'arn:aws:kms:us-east-1:[0-9]{12}:key/[a-f0-9-]+'
+  ExistingIngestQueueArn:
+    Type: String
+    AllowedPattern: 'arn:aws:sqs:us-east-1:[0-9]{12}:[A-Za-z0-9_.-]+'
+Resources:
+  Identity:
+    Type: AWS::IAM::User
+    Properties:
+      Path: /vendistri/application/
+      Tags:
+        - {Key: Application, Value: vendistri}
+  EncryptionPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ExistingConfigurationKeyOnly
+      Users: [!Ref Identity]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey']
+            Resource: !Ref ExistingConfigurationKeyArn
+  Key:
+    Type: AWS::IAM::AccessKey
+    DependsOn: EncryptionPolicy
+    Properties:
+      UserName: !Ref Identity
+  IngestPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ExistingTelemetryIngestOnly
+      Users: [!Ref Identity]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: ['sqs:ReceiveMessage', 'sqs:DeleteMessage', 'sqs:GetQueueAttributes', 'sqs:ChangeMessageVisibility']
+            Resource: !Ref ExistingIngestQueueArn
+  Credential:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Application encryption credential. No root credentials; never include in release artifacts or logs.
+      SecretString: !Sub '{"aws_access_key_id":"${Key}","aws_secret_access_key":"${Key.SecretAccessKey}"}'
+      Tags:
+        - {Key: Application, Value: vendistri}
+Outputs:
+  CredentialArn: {Value: !Ref Credential}

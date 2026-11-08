@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Stable application-host addresses for operator access and provider allowlists. Does not change production DNS.
+Parameters:
+  InstanceAName:
+    Type: String
+    Default: vendistri-aws-a
+  InstanceBName:
+    Type: String
+    Default: vendistri-aws-b
+Resources:
+  AddressA:
+    Type: AWS::Lightsail::StaticIp
+    DeletionPolicy: RetainExceptOnCreate
+    UpdateReplacePolicy: Retain
+    Properties:
+      StaticIpName: vendistri-aws-a-ip
+      AttachedTo: !Ref InstanceAName
+  AddressB:
+    Type: AWS::Lightsail::StaticIp
+    DeletionPolicy: RetainExceptOnCreate
+    UpdateReplacePolicy: Retain
+    Properties:
+      StaticIpName: vendistri-aws-b-ip
+      AttachedTo: !Ref InstanceBName
+Outputs:
+  HostAPublicIp: {Value: !GetAtt AddressA.IpAddress}
+  HostBPublicIp: {Value: !GetAtt AddressB.IpAddress}

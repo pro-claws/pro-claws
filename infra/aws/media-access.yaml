@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Scoped IAM-authenticated media mount for Lightsail, which has no EC2 instance profile.
+Parameters:
+  FileSystemId:
+    Type: String
+    AllowedPattern: 'fs-[a-f0-9]+'
+Resources:
+  Identity:
+    Type: AWS::IAM::User
+    Properties:
+      Path: /vendistri/migration/
+      Tags:
+        - {Key: Application, Value: vendistri}
+        - {Key: Purpose, Value: MountSingleMediaAccessPoint}
+  AccessPoint:
+    Type: AWS::EFS::AccessPoint
+    DeletionPolicy: RetainExceptOnCreate
+    UpdateReplacePolicy: Retain
+    Properties:
+      FileSystemId: !Ref FileSystemId
+      PosixUser: {Uid: '1001', Gid: '1001'}
+      RootDirectory:
+        Path: /vendistri
+        CreationInfo: {OwnerUid: '1001', OwnerGid: '1001', Permissions: '0770'}
+  IdentityPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: MountSingleVendistriMediaAccessPoint
+      Users: [!Ref Identity]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: ['elasticfilesystem:ClientMount', 'elasticfilesystem:ClientWrite']
+            Resource: !Sub 'arn:${AWS::Partition}:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:file-system/${FileSystemId}'
+            Condition:
+              Bool: {aws:SecureTransport: 'true'}
+              StringEquals: {elasticfilesystem:AccessPointArn: !GetAtt AccessPoint.Arn}
+  MountKey:
+    Type: AWS::IAM::AccessKey
+    DependsOn: IdentityPolicy
+    Properties:
+      UserName: !Ref Identity
+  MountCredential:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Scoped EFS mount credential. Install root-only; never log or include in artifacts.
+      SecretString: !Sub '{"aws_access_key_id":"${MountKey}","aws_secret_access_key":"${MountKey.SecretAccessKey}"}'
+      Tags:
+        - {Key: Application, Value: vendistri}
+Outputs:
+  AccessPointId: {Value: !Ref AccessPoint}
+  MountCredentialArn: {Value: !Ref MountCredential}

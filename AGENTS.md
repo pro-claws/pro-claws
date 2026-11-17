@@ -56,7 +56,11 @@ Always apply pending migrations to the local development database during develop
 
 Local development uses the existing PostgreSQL 17 server at `127.0.0.1:5432`, with database and role `proclaws_dev`. Connection settings are in the ignored `backend/.env`; reuse this server and database rather than creating another cluster. The former SQLite database and the verified cutover backup in `backend/private_data/postgres-migration-20260917/` are retained for recovery, not active development.
 
+Run suites sharing a PostgreSQL test database sequentially. Use a dedicated disposable `test_` database on the same server for clean migration rehearsals, with Django's test database configuration and test-mode settings; never rebuild a database another test process is using. Verify a fresh migration chain before changing historical migrations, and do not fake migration records to bypass a schema error. Preserve development data and existing unrelated test databases.
+
 ## Development Tooling and Disk Use
+
+Keep local development servers, workers and beat current after relevant code, dependency or migration changes. Inspect the existing launch commands and environments; gracefully refresh affected processes, preserve queue routing and scheduler state, and verify API readiness and worker responses before reporting completion. Stop beat before worker maintenance and ensure only one beat resumes. Preserve queued/in-flight work; do not purge queues or start duplicate services. Hot-reloading servers need verification rather than a restart solely because their process is old. Never print service environment secrets.
 
 Hardware is currently unsupported in store releases for every account, including demo/reviewer accounts. Android's `BuildConfig.HARDWARE_ENABLED` is true only in debug builds and false in release; iOS's `HardwareAvailability` follows the same Debug/Release policy. Preserve development hardware access. Verify release navigation, notification/realtime entry points and hardware-specific permissions/services when changing this boundary; hiding the menu alone is insufficient. Preserve the previous signed Android bundle, use the existing upload key and verify its certificate against the previous release. Keep signing passwords in the existing credential store, never source files or command output.
 

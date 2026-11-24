@@ -24,6 +24,8 @@ Subsequent October 29 instruction: while new-app provisioning is blocked by Appl
 
 Android phone testing that needs Android Auto uses Google Play Internal App Sharing: prepare the `.aab`, let the user upload it and return the sharing link, then open that link on the intended phone and install through Google Play. Do not replace that installation with an adb-installed APK or Debug app. Preserve the existing Android Auto entry points and verify them in the intended bundle.
 
+Navigation location changes require real-device tunnel acceptance before release on both iPhone and Android, including CarPlay and Android Auto. Record the tested build, device/OS, tunnel and outcome in the existing release evidence. Verify entry, sustained GPS loss while moving and stopped, no-new-native-sample expiry (puck hidden and outdated speed/progress cleared), duplicate/late samples, exit reacquisition, rerouting and locked/background navigation. Confirm task distance, visit metrics, permissions, recovery and ordinary map behavior still use their existing device-location owners. Simulator/replay tests do not satisfy this release gate; keep release acceptance pending until the physical runs are recorded. Use a passenger/tester for observations and logging.
+
 Use existing question-mark help controls, tooltips or accessible help popovers for secondary explanations in existing and new UI. Keep essential instructions, required decisions, validation errors and actionable failure feedback visible on the page. On phones, help must work by tap and accessibility navigation rather than relying on hover.
 
 ## Account Views
